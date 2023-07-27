@@ -1,4 +1,4 @@
-import java.math.BigInterger;
+import java.math.BigInteger;
 import java.security.SecureRandom;
 
 public class LatticeEncryption {
@@ -34,7 +34,7 @@ public class LatticeEncryption {
 
         for(int i = 0; i < N; i++) {
             for(int j = 0; j < N; j++) {
-                publicKey[i][j] = new BigInteger(STANDARD_DEVIATION, random);
+                publicKey[i][j] = new BigInteger(STANDARD_DEVIATION * 2, random).subtract(BigInteger.valueOf(STANDARD_DEVIATION));
             }
         }
         return publicKey;
@@ -46,18 +46,50 @@ public class LatticeEncryption {
         SecureRandom random = new SecureRandom();
 
         for(int i = 0; i < N; i++) {
-            privateKey[i] = new BigInteger(STANDARD_DEVIATION, random);
+            privateKey[i] = new BigInteger(STANDARD_DEVIATION * 2, random).subtract(BigInteger.valueOf(STANDARD_DEVIATION));
         }
         return privateKey;
     }
 
     // encrypts a message using the public key
     private static BigInteger[] encrypt(BigInteger message, BigInteger[][] publicKey) {
-        
+        SecureRandom random = new SecureRandom();
+        BigInteger[] cipherText = new BigInteger[N];
+
+        for(int i = 0; i < N; i++) {
+            cipherText[i] = BigInteger.ZERO;
+
+            for(int j = 0; j < N; j++) {
+                BigInteger noise = new BigInteger(STANDARD_DEVIATION * 2, random).subtract(BigInteger.valueOf(STANDARD_DEVIATION));
+                cipherText[i] = cipherText[i].add(publicKey[i][j].multiply(noise));
+            }
+            // add message
+            cipherText[i] = cipherText[i].add(message);
+            cipherText[i] = cipherText[i].mod(BigInteger.valueOf(Q));
+        }
+        return cipherText;
     }
 
     // decrypts a message using the private key
     private static BigInteger decrypt(BigInteger[] cipherText, BigInteger[] privateKey) {
+        BigInteger message = BigInteger.ZERO;
 
+        for(int i = 0; i < N; i++) {
+            message = message.add(cipherText[i].multiply(privateKey[i]));
+        }
+
+        // reduce modulo Q to get the decrypted message
+        message = message.mod(BigInteger.valueOf(Q));
+
+        // Since we added the message scaled by Q/2 in the encryption process,
+        // we need to subtract the scaled value to get the original message back.
+        BigInteger scaledMessage = message.multiply(BigInteger.valueOf(Q / 2)).mod(BigInteger.valueOf(Q));
+        if (scaledMessage.compareTo(message) <= 0) {
+            message = message.subtract(scaledMessage);
+        } else {
+            message = message.add(BigInteger.valueOf(Q)).subtract(scaledMessage);
+        }
+
+        return message;
     }
 }
