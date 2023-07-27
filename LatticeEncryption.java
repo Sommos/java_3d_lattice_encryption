@@ -50,4 +50,14 @@ public class LatticeEncryption {
         }
         return privateKey;
     }
+
+    // encrypts a message using the public key
+    private static BigInteger[] encrypt(BigInteger message, BigInteger[][] publicKey) {
+        
+    }
+
+    // decrypts a message using the private key
+    private static BigInteger decrypt(BigInteger[] cipherText, BigInteger[] privateKey) {
+
+    }
 }
