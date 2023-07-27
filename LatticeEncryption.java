@@ -28,7 +28,7 @@ public class LatticeEncryption {
     }
 
     // generates a random public key matrix
-    private static BigInteger[][] generatePublicKey() {
+    static BigInteger[][] generatePublicKey() {
         BigInteger[][] publicKey = new BigInteger[N][N];
         SecureRandom random = new SecureRandom();
 
@@ -41,7 +41,7 @@ public class LatticeEncryption {
     }
     
     // generates a random private key vector
-    private static BigInteger[] generatePrivateKey() {
+    static BigInteger[] generatePrivateKey() {
         BigInteger[] privateKey = new BigInteger[N];
         SecureRandom random = new SecureRandom();
 
@@ -52,7 +52,7 @@ public class LatticeEncryption {
     }
 
     // encrypts a message using the public key
-    private static BigInteger[] encrypt(BigInteger message, BigInteger[][] publicKey) {
+    static BigInteger[] encrypt(BigInteger message, BigInteger[][] publicKey) {
         SecureRandom random = new SecureRandom();
         BigInteger[] cipherText = new BigInteger[N];
 
@@ -71,7 +71,7 @@ public class LatticeEncryption {
     }
 
     // decrypts a message using the private key
-    private static BigInteger decrypt(BigInteger[] cipherText, BigInteger[] privateKey) {
+    static BigInteger decrypt(BigInteger[] cipherText, BigInteger[] privateKey) {
         BigInteger message = BigInteger.ZERO;
 
         for(int i = 0; i < N; i++) {
